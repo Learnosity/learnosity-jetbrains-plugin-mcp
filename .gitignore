@@ -1,0 +1,6 @@
+.ai/
+.gradle/
+.idea/
+.intellijPlatform/
+.kotlin/
+build/
