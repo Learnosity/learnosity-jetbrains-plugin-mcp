@@ -21,6 +21,9 @@ installed later still gets it. When AI Assistant is one of them, the notificatio
 settings page to enable the server. If a file is not valid JSON, the plugin leaves it untouched and
 shows a notification explaining how to add the server by hand.
 
+The paths are under the user's home directory (`%USERPROFILE%` on Windows). Before writing, the plugin checks
+that the file and the nearest existing directory above it are writable, and reports a failure like any other
+unwritable configuration.
 Uninstalling or disabling the plugin removes the entries again, but only those the plugin added.
 That runs when the IDE unloads the plugin without a restart; if it needs a restart instead, the
 entries stay.

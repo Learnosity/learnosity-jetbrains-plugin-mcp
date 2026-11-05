@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
+import java.nio.file.AccessDeniedException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
@@ -60,7 +61,16 @@ class McpJsonFile(private val path: Path) {
         return root.asJsonObject
     }
 
+    /** Fails before any write when the file, or the nearest existing directory above it, is not writable. */
+    private fun requireWritable() {
+        val directory = generateSequence(path.parent) { it.parent }.firstOrNull(Files::isDirectory)
+            ?: throw AccessDeniedException(path.toString(), null, "no existing parent directory")
+        val blocked = listOf(path, directory).firstOrNull { Files.exists(it) && !Files.isWritable(it) } ?: return
+        throw AccessDeniedException(blocked.toString(), null, "not writable")
+    }
+
     private fun write(root: JsonObject) {
+        requireWritable()
         Files.createDirectories(path.parent)
         val temp = Files.createTempFile(path.parent, "mcp", ".json")
         Files.writeString(temp, GSON.toJson(root) + "\n")
