@@ -13,7 +13,7 @@ class BuildAideConfigurable : BoundConfigurable("Learnosity Build Aide") {
         row("Region:") {
             comboBox(Region.entries, textListCellRenderer { it?.label })
                 .bindItem({ RegionSettings.region }, { RegionSettings.region = it ?: Region.AMERICA })
-                .comment("Choose the server nearest you for faster responses and to keep your traffic in your region.")
+                .comment("Choose the server nearest you for faster responses.")
         }
     }
 

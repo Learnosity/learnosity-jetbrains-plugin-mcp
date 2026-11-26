@@ -41,13 +41,13 @@ class BuildAideRegistrar {
     @Synchronized
     fun updateServerUrls() {
         val url = RegionSettings.region.serverUrl
-        McpClient.entries.filter { properties.getValue(it.stateKey) != null }.forEach { client ->
+        McpClient.entries.filter { properties.getValue(it.stateKey) == ADDED }.forEach { client ->
             try {
                 client.mcpJson.updateRemoteServerUrl(SERVER_NAME, url, ::isServerUrl)
             } catch (e: InvalidMcpJsonException) {
-                thisLogger().warn("Left $SERVER_NAME in ${client.displayName} on its URL: ${e.message}")
+                reportUpdateFailure(client, url, e.message.orEmpty())
             } catch (e: IOException) {
-                thisLogger().warn("Could not update $SERVER_NAME in ${client.displayName}: ${e.message}")
+                reportUpdateFailure(client, url, "Could not write the ${client.displayName} MCP configuration: ${e.message}")
             }
         }
     }
@@ -93,6 +93,15 @@ class BuildAideRegistrar {
                 "with the URL ${RegionSettings.region.serverUrl}.",
             NotificationType.WARNING,
         ).notify(project)
+    }
+
+    private fun reportUpdateFailure(client: McpClient, url: String, reason: String) {
+        thisLogger().warn(reason)
+        createNotification(
+            "${StringUtil.escapeXmlEntities(reason)}. ${client.displayName} still uses the previous region; " +
+                "fix the file, then set the URL of $SERVER_NAME in ${client.settingsPath} to $url.",
+            NotificationType.WARNING,
+        ).notify(null)
     }
 
     private fun notifyAdded(project: Project, clients: List<McpClient>) {

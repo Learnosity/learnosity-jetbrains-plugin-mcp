@@ -28,9 +28,10 @@ unwritable configuration.
 
 **Settings | Tools | Learnosity Build Aide** has a Region option: America (the default,
 `mcp.learnosity.com`), Europe (`mcp-eu.learnosity.com`) or Australia (`mcp-au.learnosity.com`).
-Users only see the names. New entries use the chosen region. On Apply, each entry the plugin knows
-about is moved to the new URL, keeping its other keys, but only while it still points at a Build
-Aide URL; an entry the user pointed elsewhere is left alone.
+Users only see the names. New entries use the chosen region. On Apply, each entry the plugin added is
+moved to the new URL, keeping its other keys, but only while it still points at a Build Aide URL;
+an entry the user created or pointed elsewhere is left alone. If a file cannot be updated, a
+notification names the client and the URL to set by hand.
 
 Uninstalling or disabling the plugin removes the entries again, but only those the plugin added.
 That runs when the IDE unloads the plugin without a restart; if it needs a restart instead, the
