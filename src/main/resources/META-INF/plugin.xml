@@ -36,6 +36,10 @@ configuration file to edit.</p>
     <i>"Using the Learnosity Build Aide MCP, how do I sign an Items API request in Node.js?"</i></li>
 </ol>
 
+<h2>Region</h2>
+<p>Build Aide runs in three regions: America (the default), Europe and Australia. To use the one
+nearest you, choose it under <b>Settings | Tools | Learnosity Build Aide</b>. Applying it rewrites
+the AI Assistant and Junie entries, but only while they still point at a Build Aide server.</p>
 <h2>Tools</h2>
 <ul>
   <li><code>search_docs_sources</code>: Search the indexed Learnosity documentation</li>
@@ -78,6 +82,11 @@ plugin is licensed under the
 ]]></description>
 
     <change-notes><![CDATA[
+<h3>1.1.0</h3>
+<ul>
+  <li>Adds a Region option under <b>Settings | Tools | Learnosity Build Aide</b> to connect to the America
+    (default), Europe or Australia server.</li>
+</ul>
 <h3>1.0.4</h3>
 <ul>
   <li>Checks that the MCP configuration is writable before changing it.</li>
@@ -105,6 +114,8 @@ plugin is licensed under the
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.learnosity.buildaide.BuildAideStartupActivity"/>
         <notificationGroup id="Learnosity Build Aide" displayType="BALLOON"/>
+        <applicationConfigurable parentId="tools" instance="com.learnosity.buildaide.BuildAideConfigurable"
+                                 id="com.learnosity.buildaide.settings" displayName="Learnosity Build Aide"/>
     </extensions>
 
     <applicationListeners>

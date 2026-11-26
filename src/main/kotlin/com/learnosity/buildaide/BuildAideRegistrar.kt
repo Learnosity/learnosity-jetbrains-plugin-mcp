@@ -12,7 +12,6 @@ import com.intellij.openapi.util.text.StringUtil
 import java.io.IOException
 
 private const val SERVER_NAME = "learnosity-build-aide"
-private const val SERVER_URL = "https://mcp.learnosity.com/build/build-aide"
 private const val ADDED = "added"
 private const val ALREADY_PRESENT = "already-present"
 private const val NOTIFICATION_GROUP = "Learnosity Build Aide"
@@ -21,7 +20,10 @@ private const val MCP_SETTINGS_NAME = "Model Context Protocol (MCP)"
 private const val SAMPLE_PROMPT =
     "Using the Learnosity Build Aide MCP, how do I sign an Items API request in Node.js?"
 
-/** Adds the server once to each AI client in use, and removes it on uninstall where it added it. */
+/**
+ * Adds the server once to each AI client in use, on the chosen region, and removes it on
+ * uninstall where it added it.
+ */
 @Service
 class BuildAideRegistrar {
 
@@ -35,6 +37,21 @@ class BuildAideRegistrar {
         if (added.isNotEmpty()) notifyAdded(project, added)
     }
 
+    /** Points each client's entry at the chosen region, but only while it still points at a Build Aide URL. */
+    @Synchronized
+    fun updateServerUrls() {
+        val url = RegionSettings.region.serverUrl
+        McpClient.entries.filter { properties.getValue(it.stateKey) != null }.forEach { client ->
+            try {
+                client.mcpJson.updateRemoteServerUrl(SERVER_NAME, url, ::isServerUrl)
+            } catch (e: InvalidMcpJsonException) {
+                thisLogger().warn("Left $SERVER_NAME in ${client.displayName} on its URL: ${e.message}")
+            } catch (e: IOException) {
+                thisLogger().warn("Could not update $SERVER_NAME in ${client.displayName}: ${e.message}")
+            }
+        }
+    }
+
     @Synchronized
     fun unregister() {
         McpClient.entries.forEach(::unregister)
@@ -42,7 +59,7 @@ class BuildAideRegistrar {
 
     private fun register(project: Project, client: McpClient): Boolean {
         val added = try {
-            client.mcpJson.addRemoteServer(SERVER_NAME, SERVER_URL)
+            client.mcpJson.addRemoteServer(SERVER_NAME, RegionSettings.region.serverUrl)
         } catch (e: InvalidMcpJsonException) {
             reportFailure(project, client, e.message.orEmpty())
             return false
@@ -72,7 +89,8 @@ class BuildAideRegistrar {
     private fun reportFailure(project: Project, client: McpClient, reason: String) {
         thisLogger().warn(reason)
         createNotification(
-            "${StringUtil.escapeXmlEntities(reason)}. Add the server in ${client.settingsPath} with the URL $SERVER_URL.",
+            "${StringUtil.escapeXmlEntities(reason)}. Add the server in ${client.settingsPath} " +
+                "with the URL ${RegionSettings.region.serverUrl}.",
             NotificationType.WARNING,
         ).notify(project)
     }

@@ -30,6 +30,17 @@ class McpJsonFile(private val path: Path) {
         return true
     }
 
+    /** Points the server at [url], keeping its other keys, while its URL is still one [isOurs] accepts. */
+    fun updateRemoteServerUrl(name: String, url: String, isOurs: (String?) -> Boolean): Boolean {
+        val root = read()
+        val entry = serversOf(root).get(name)?.takeIf { it.isJsonObject }?.asJsonObject ?: return false
+        val current = entry.get("url")?.takeIf { it.isJsonPrimitive }?.asString
+        if (!isOurs(current) || current == url) return false
+        entry.addProperty("url", url)
+        write(root)
+        return true
+    }
+
     /** Removes a server if present; returns whether the file changed. */
     fun removeServer(name: String): Boolean {
         val root = read()
