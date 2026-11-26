@@ -21,6 +21,13 @@ dependencies {
         intellijIdea("2025.3.6.2")
         compatiblePlugins("com.intellij.ml.llm", "org.jetbrains.junie")
     }
+    testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 intellijPlatform {

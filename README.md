@@ -1,8 +1,8 @@
 # Learnosity Build Aide MCP for JetBrains IDEs
 
 A thin plugin that adds the remote, authless Build Aide server
-(`https://mcp.learnosity.com/build/build-aide`) to JetBrains AI Assistant and Junie. It bundles no
-server code. The Marketplace listing, legal notice included, is the `<description>` in
+(`https://mcp.learnosity.com/build/build-aide` by default) to JetBrains AI Assistant and Junie. It
+bundles no server code. The Marketplace listing, legal notice included, is the `<description>` in
 `src/main/resources/META-INF/plugin.xml`.
 
 ## How it registers the server
@@ -24,6 +24,15 @@ shows a notification explaining how to add the server by hand.
 The paths are under the user's home directory (`%USERPROFILE%` on Windows). Before writing, the plugin checks
 that the file and the nearest existing directory above it are writable, and reports a failure like any other
 unwritable configuration.
+## Region
+
+**Settings | Tools | Learnosity Build Aide** has a Region option: America (the default,
+`mcp.learnosity.com`), Europe (`mcp-eu.learnosity.com`) or Australia (`mcp-au.learnosity.com`).
+Users only see the names. New entries use the chosen region. On Apply, each entry the plugin added is
+moved to the new URL, keeping its other keys, but only while it still points at a Build Aide URL;
+an entry the user created or pointed elsewhere is left alone. If a file cannot be updated, a
+notification names the client and the URL to set by hand.
+
 Uninstalling or disabling the plugin removes the entries again, but only those the plugin added.
 That runs when the IDE unloads the plugin without a restart; if it needs a restart instead, the
 entries stay.
